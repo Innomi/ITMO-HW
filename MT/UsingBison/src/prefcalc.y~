@@ -1,0 +1,89 @@
+%{
+    #define _GNU_SOURCE
+    #include <string>
+%}
+
+%defines
+%language "c++"
+%locations
+
+%define api.token.constructor
+%define api.value.type variant
+
+%token <std::string>
+    NUM     "number"
+    VAR     "identifier"
+;
+%token 
+    EOF 0   "eof"
+    EQ      "=="
+    NEQ     "!="
+    GEQ     ">="
+    LEQ     "<="
+    ASSGN   "="
+    IF      "?"
+    ELSE    ":"
+    OB      "("
+    CB      ")"
+    PRNT    "@"
+    END     ";"
+    ADD     "+"
+    SUB     "-"
+    MUL     "*"
+    DIV     "/"
+    MOD     "%"
+    NOT     "!"
+    AND     "&"
+    OR      "|"
+    GRT     ">"
+    LSS     "<"
+;
+
+%%
+%start main;
+
+main:
+    sttmseq
+;
+
+sttmseq:
+    %empty
+|   sttm sttmseq
+;
+
+sttm:
+    "?" exp sttm else ";"
+|   "@" printargs ";"
+|   "=" VAR exp
+|   "(" sttmseq ")"
+;
+
+else:
+    %empty
+|   ":" sttm
+;
+
+printargs:
+    %empty
+|   exp printargs
+;
+
+exp:
+    "number"
+|   "identifier"
+|   "+"  exp exp
+|   "-"  exp exp
+|   "*"  exp exp
+|   "/"  exp exp
+|   "%"  exp exp
+|   "!"  exp
+|   "&"  exp exp
+|   "|"  exp exp
+|   "<"  exp exp
+|   ">"  exp exp
+|   "==" exp exp
+|   "!=" exp exp
+|   ">=" exp exp
+|   "<=" exp exp
+;
+%%

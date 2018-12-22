@@ -1,0 +1,14 @@
+#pragma once
+
+#include <sstream>
+#include <stdexcept>
+
+class parse_exception : public std::runtime_error
+{
+public:
+    explicit parse_exception(const char* msg, int pos);
+
+private:
+    int _pos;
+    static std::ostringstream _cnvt;
+};

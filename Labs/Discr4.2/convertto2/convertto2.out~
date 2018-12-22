@@ -1,0 +1,31 @@
+start: s
+accept: ac
+reject: rj
+blank: &
+s 0 -> s 0 <
+s 1 -> s 1 <
+s 2 -> s 2 <
+s & -> r | >
+r 0 -> r 0 >
+r 1 -> r 1 >
+r 2 -> r 2 >
+r | -> r | >
+r & -> m & <
+m 2 -> l 1 <
+m 1 -> l 0 <
+m 0 -> m 2 <
+m | -> clr & >
+l 0 -> l 0 <
+l 1 -> l 1 <
+l 2 -> l 2 <
+l | -> p | <
+p 0 -> r 1 >
+p 1 -> p 0 <
+p & -> r 1 >
+clr 2 -> clr & >
+clr & -> clr & <
+clr 0 -> end 0 <
+clr 1 -> end 1 <
+end 0 -> end 0 <
+end 1 -> end 1 <
+end & -> ac & >

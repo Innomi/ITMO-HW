@@ -1,0 +1,21 @@
+#pragma once
+
+#include <list>
+#include <string>
+
+class tree
+{
+public:
+    template <class... Children>
+    tree(std::string && mode, Children&&... children);
+    tree(std::string && node);
+
+private:
+    template <class... Children>
+    void init(tree && t, Children&&... children);
+
+    void init(tree && t);
+
+    std::string _node;
+    std::list<tree> _children;
+};

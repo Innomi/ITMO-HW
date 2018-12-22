@@ -1,0 +1,4 @@
+while (<>) {
+    s/\bhuman\b/\bcomputer\b/g;
+    print;
+}

@@ -1,0 +1,130 @@
+%require "3.2.2"
+%defines
+%language "c++"
+
+%code requires {
+#include <iostream>
+#include <list>
+#include <memory>
+#include <string>
+#include <utility>
+#include "expr.hpp"
+#include "num.hpp"
+#include "var.hpp"
+#include "bin_op.hpp"
+#include "un_op.hpp"
+#include "main_class.hpp"
+#include "sttm.hpp"
+#include "assign_sttm.hpp"
+#include "if_sttm.hpp"
+#include "print_sttm.hpp"
+#include "scope_sttm.hpp"
+
+class driver;
+
+#define MAKE_SHARED(type, constr) \
+    std::move(std::shared_ptr<type>((type *)new constr))
+}
+
+%param { driver & drv }
+
+%locations
+
+%define api.token.constructor
+%define api.value.type variant
+%define parse.trace
+%define parse.error verbose
+
+%code {
+    #include "driver.hh"
+}
+
+%define api.token.prefix {TOK_}
+%token <std::string>
+    NUM     "number"
+    VAR     "variable"
+;
+%token 
+    EOF 0   "eof"
+    EQ      "=="
+    NEQ     "!="
+    GEQ     ">="
+    LEQ     "<="
+    ASSGN   "="
+    IF      "?"
+    ELSE    ":"
+    OB      "("
+    CB      ")"
+    PRNT    "@"
+    END     ";"
+    ADD     "+"
+    SUB     "-"
+    MUL     "*"
+    DIV     "/"
+    MOD     "%"
+    NOT     "!"
+    AND     "&"
+    OR      "|"
+    GRT     ">"
+    LSS     "<"
+    WHILE   "#"
+;
+%type <std::shared_ptr<expr>> exp
+%type <std::list<std::shared_ptr<expr>>> printargs
+%type <std::shared_ptr<sttm>> sttm else
+%type <std::list<std::shared_ptr<sttm>>> sttmseq
+
+%%
+%start main;
+
+main:
+    sttmseq                 { drv.result = std::move(main_class(std::move($1))); }
+;
+
+sttmseq:
+    %empty                  {}
+|   sttm sttmseq            { $$ = std::move($2); $$.push_front(std::move($1)); }
+;
+
+sttm:
+    "?" exp sttm else ";"   { $$ = MAKE_SHARED(sttm, if_sttm(std::move($2), std::move($3), std::move($4))); }
+|   "@" printargs ";"       { $$ = MAKE_SHARED(sttm, print_sttm(std::move($2))); }
+|   "=" "variable" exp      { $$ = MAKE_SHARED(sttm, assign_sttm(std::move($2), std::move($3))); }
+|   "(" sttmseq ")"         { $$ = MAKE_SHARED(sttm, scope_sttm(std::move($2))); }
+|   "#" exp sttm            { $$ = MAKE_SHARED(sttm, while_sttm(std::move($2), std::move($3))); }
+;
+
+else:
+    %empty                  { $$ = nullptr; }
+|   ":" sttm                { $$ = std::move($2); }
+;
+
+printargs:
+    %empty                  {}
+|   exp printargs           { $$ = std::move($2); $$.push_front(std::move($1)); }
+;
+
+exp:
+    "number"                { $$ = MAKE_SHARED(expr, num(std::move($1))); }
+|   "variable"              { $$ = MAKE_SHARED(expr, var(std::move($1))); }
+|   "+"  exp exp            { $$ = MAKE_SHARED(expr, bin_op("+", std::move($2), std::move($3))); }
+|   "-"  exp exp            { $$ = MAKE_SHARED(expr, bin_op("-", std::move($2), std::move($3))); }
+|   "*"  exp exp            { $$ = MAKE_SHARED(expr, bin_op("*", std::move($2), std::move($3))); }
+|   "/"  exp exp            { $$ = MAKE_SHARED(expr, bin_op("/", std::move($2), std::move($3))); }
+|   "%"  exp exp            { $$ = MAKE_SHARED(expr, bin_op("%", std::move($2), std::move($3))); }
+|   "!"  exp                { $$ = MAKE_SHARED(expr, un_op("!", std::move($2))); }
+|   "&"  exp exp            { $$ = MAKE_SHARED(expr, bin_op("&", std::move($2), std::move($3))); }
+|   "|"  exp exp            { $$ = MAKE_SHARED(expr, bin_op("|", std::move($2), std::move($3))); }
+|   "<"  exp exp            { $$ = MAKE_SHARED(expr, bin_op("<", std::move($2), std::move($3))); }
+|   ">"  exp exp            { $$ = MAKE_SHARED(expr, bin_op(">", std::move($2), std::move($3))); }
+|   "==" exp exp            { $$ = MAKE_SHARED(expr, bin_op("==", std::move($2), std::move($3))); }
+|   "!=" exp exp            { $$ = MAKE_SHARED(expr, bin_op("!=", std::move($2), std::move($3))); }
+|   ">=" exp exp            { $$ = MAKE_SHARED(expr, bin_op(">=", std::move($2), std::move($3))); }
+|   "<=" exp exp            { $$ = MAKE_SHARED(expr, bin_op("<=", std::move($2), std::move($3))); }
+;
+%%
+
+void yy::parser::error(const location_type & l, const std::string & m)
+{
+    std::cerr << l << ": " << m << '\n';
+}

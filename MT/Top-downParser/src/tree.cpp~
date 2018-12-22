@@ -1,0 +1,21 @@
+#include "tree.hpp"
+
+template<class... Children>
+tree::tree(std::string && node, Children&&... children) : _node(std::move(node))
+{
+    init<Children...>(children...);
+};
+
+template <class... Children>
+void tree::init(tree && t, Children&&... children)
+{
+    _children.push_back(std::move(t));
+    init<Children...>(children...);
+};
+
+void tree::init(tree && t)
+{
+    _children.push_back(std::move(t));
+};
+
+tree::tree(std::string && node) : _node(std::move(node)) {};

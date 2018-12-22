@@ -1,0 +1,24 @@
+BISON = bison
+CXXFLAGS+=-std=c++17 -Wall -O3
+CXX=g++
+FLEX=flex
+INPUT=input.txt
+OUTPUT=output.c
+
+all: out/main
+
+run: out/main
+	$< $(INPUT) $(OUTPUT)
+
+%.cc %.hh: %.yy
+	$(BISON) $(BISONFLAGS) -o $*.cc $<
+
+%.cc: %.ll
+	$(FLEX) $(FLEXFLAGS) -o$@ $<
+
+out/main: src/main.cpp src/assign_sttm.cpp src/bin_op.cpp src/driver.cc src/expr.cpp src/if_sttm.cpp src/main_class.cpp src/num.cpp src/print_sttm.cpp src/scope_sttm.cpp src/str_utility.cpp src/sttm.cpp src/un_op.cpp src/var.cpp src/prefcalc.cc src/lex.cc
+	mkdir -p out
+	$(CXX) $^ $(CXXFLAGS) -o $@
+
+clean:
+	rm -rf out

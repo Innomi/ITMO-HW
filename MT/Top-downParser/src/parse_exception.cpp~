@@ -1,0 +1,15 @@
+#include "parse_exception.hpp"
+//#include <iostream>
+
+std::ostringstream parse_exception::_cnvt;
+
+parse_exception::parse_exception(const char* msg, int pos) : 
+    std::runtime_error(msg), _pos(pos) {};
+
+virtual const char* parse_exception::what() const throw()
+{
+    _cnvt.str("");
+    _cnvt << runtime_error::what() << " (pos: " << _pos << ")";
+    //std::cout << _cnvt.str().c_str() << std::endl;
+    return _cnvt.str().c_str();
+};

@@ -1,0 +1,100 @@
+#include <cstdio>
+#include <string>
+#include "lexical_analyzer.hpp"
+
+lexical_analyzer::lexical_analyzer(std::ifstream & is) throw (parse_exception) : 
+    _is(std::forward<std::ifstream>(is)), _cur_pos(0)
+{
+    next_char();
+};
+
+token lexical_analyzer::next_token() throw (parse_exception)
+{
+    while (is_blank(_cur_char))
+    {
+        next_char();
+    }
+    switch (_cur_char)
+    {
+        case ('(') :
+        {
+            _cur_token = OB;
+            break;
+        }
+        case (')') :
+        {
+            _cur_token = CB;
+            break;
+        }
+        case ('&') :
+        {
+            _cur_token = AND;
+            break;
+        }
+        case ('|') :
+        {
+            _cur_token = OR;
+            break;
+        }
+        case ('^') :
+        {
+            _cur_token = XOR;
+            break;
+        }
+        case ('!') :
+        {
+            _cur_token = NOT;
+            break;
+        }
+        case (EOF) :
+        {
+            _cur_token = END;
+            break;
+        }
+        default :
+        {
+            if ((_cur_char > 'a' &&  _cur_char < 'z') || (_cur_char > 'A' && _cur_char < 'Z'))
+            {
+                _cur_token = VAR;
+            }
+            else
+            {
+                //sprintf(msg, "Illegal character %c on position %d.", _cur_char, _cur_pos);
+                throw parse_exception("Illegal character " + _cur_char, _cur_pos);
+            }
+        }
+    }
+    if (_cur_token != END)
+    {
+        next_char();
+    }
+    return _cur_token;
+};
+
+token lexical_analyzer::cur_token()
+{
+    return _cur_token;
+};
+
+int lexical_analyzer::cur_pos()
+{
+    return _cur_pos;
+};
+
+void lexical_analyzer::next_char() throw (parse_exception)
+{
+    ++_cur_pos;
+    try
+    {
+        _is.get(_cur_char);
+    }
+    catch (std::exception & e)
+    {
+        throw parse_exception(e.what(), _cur_pos);
+    }
+};
+
+bool lexical_analyzer::is_blank(char c)
+{
+    return c == ' ' || c == '\r' || c == '\n' || c == '\t';
+};

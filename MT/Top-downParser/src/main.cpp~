@@ -1,0 +1,26 @@
+#include <iostream>
+#include "lexical_analyzer.hpp"
+#include "tree.hpp"
+
+int main()
+{
+    token token;
+    tree a("a"), b("b"), c("c");
+    tree d("d", std::move(a), std::move(b), std::move(c));
+    std::ifstream is("test.in");
+    lexical_analyzer lex_an(is);
+    try
+    {
+        //throw parse_exception("asd", 21);
+        token = lex_an.next_token();
+        if (token == END)
+        {
+            std::cout << "end" << std::endl;
+        }
+    }
+    catch (parse_exception & e)
+    {
+        //std::cerr << e.what() << std::endl;
+    }
+    return 0;
+}

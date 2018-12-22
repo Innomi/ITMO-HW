@@ -1,0 +1,29 @@
+while (<>) {
+    if (/[^ \n]/) {
+        s/^ +//;
+        s/ +$//;
+        s/ +/ /g;
+        print;
+        break;
+    }
+}
+while (<>) {
+    print "suka\n";
+    if (/^ *$/) {
+        while (<>) {
+            if (/[^ \n]/) {
+                print "\n";
+                s/^ +//;
+                s/ +$//;
+                s/ +/ /g;
+                print;
+                break;
+            }
+        }
+    } else {
+        s/^ +//;
+        s/ +$//;
+        s/ +/ /g;
+        print;
+    }
+}

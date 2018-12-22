@@ -1,0 +1,30 @@
+start: s
+accept: ac
+reject: rj
+blank: !
+s 0 -> r 2 >
+s 1 -> r 3 >
+r 0 -> r 2 >
+r 1 -> r 3 >
+r ! -> c ! <
+c 0 -> c 0 <
+c 1 -> c 1 <
+c 4 -> c 4 <
+c 5 -> c 5 <
+c 2 -> pz 4 >
+c 3 -> pnz 5 >
+c ! -> end ! >
+pz 0 -> pz 0 >
+pz 1 -> pz 1 >
+pz 4 -> pz 4 >
+pz 5 -> pz 5 >
+pz ! -> c 0 <
+pnz 0 -> pnz 0 >
+pnz 1 -> pnz 1 >
+pnz 4 -> pnz 4 >
+pnz 5 -> pnz 5 >
+pnz ! -> c 1 <
+end 4 -> end ! >
+end 5 -> end ! >
+end 0 -> ac 0 ^
+end 1 -> ac 1 ^
