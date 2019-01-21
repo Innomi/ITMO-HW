@@ -1,4 +1,0 @@
-while (<>) {
-    s/a.*aa+.*aa+.*a(a*)/bad$1/g;
-    print;
-}
