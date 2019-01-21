@@ -1,9 +1,0 @@
-char* hello(char* name)
-{
-    return "Hello, world!";
-}
-
-int main()
-{
-    return 0;
-}
