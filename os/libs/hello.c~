@@ -1,0 +1,24 @@
+#include <stdio.h>
+
+typedef struct
+{
+    static void H()
+    {
+        putchar('H');
+    }
+
+    static void e()
+    {
+        putchar('e');
+    }
+
+    static void l()
+    {
+        putchar('l');
+    }
+
+    static void o()
+    {
+        putchar('o');
+    }
+} hello;
